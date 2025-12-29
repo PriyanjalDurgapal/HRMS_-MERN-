@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# Environment
+.env
+
+# Uploads you don’t want
+backend/uploads/
+
+# Logs
+*.log
