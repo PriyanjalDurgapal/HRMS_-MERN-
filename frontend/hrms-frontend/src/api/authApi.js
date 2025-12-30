@@ -1,7 +1,6 @@
-
-
 import axios from "axios";
 
+// Use Vite environment variable
 const API = axios.create({
   baseURL: "http://localhost:5000/api/auth",
   timeout: 10000,

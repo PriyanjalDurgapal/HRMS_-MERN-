@@ -3,6 +3,7 @@ import Slider from "../../components/Slider";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { adminLogin } from "../../api/authApi";
+import ForgotPasswordModal from "../../components/ForgotPasswordModal";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export default function AdminLogin() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
 
   const slides = [
     {
@@ -106,7 +108,12 @@ export default function AdminLogin() {
                     />
                     Remember me
                   </label>
-                  <span className="underline cursor-pointer">
+
+                  {/* ONLY CHANGE HERE */}
+                  <span
+                    className="underline cursor-pointer"
+                    onClick={() => setShowForgot(true)}
+                  >
                     Forgot Password?
                   </span>
                 </div>
@@ -121,6 +128,12 @@ export default function AdminLogin() {
 
         </div>
       </div>
+
+      {/* FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal
+        open={showForgot}
+        onClose={() => setShowForgot(false)}
+      />
     </div>
   );
 }

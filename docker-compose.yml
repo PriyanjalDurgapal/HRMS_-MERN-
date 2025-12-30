@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: hrms-backend
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  frontend:
+    container_name: hrms-frontend
+    build:
+      context: ./frontend/hrms-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

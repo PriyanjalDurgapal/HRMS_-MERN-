@@ -4,15 +4,25 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import logActivity from "../utils/logActivity.js";
 
+// 🔽 IMPORT FORGOT PASSWORD CONTROLLERS
+import {
+  sendChangePasswordOTP,
+  verifyOTPAndChangePassword,
+} from "../controllers/changePasswordController.js";
+
 const router = express.Router();
 
+/**
+ * =========================
+ * ADMIN LOGIN
+ * =========================
+ */
 router.post("/login", async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
     const user = await User.findOne({ email });
 
-    
     if (!user) {
       await logActivity({
         userType: "admin",
@@ -24,7 +34,6 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
- 
     if (user.role !== role) {
       await logActivity({
         userId: user._id,
@@ -40,7 +49,6 @@ router.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-  
     if (!isMatch) {
       await logActivity({
         userId: user._id,
@@ -81,5 +89,17 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+/**
+ * =========================
+ * FORGOT PASSWORD (OTP)
+ * =========================
+ */
+
+// SEND OTP
+router.post("/send-change-password-otp", sendChangePasswordOTP);
+
+// VERIFY OTP + CHANGE PASSWORD
+router.post("/verify-otp-change-password", verifyOTPAndChangePassword);
 
 export default router;

@@ -13,7 +13,7 @@ export default function Logout() {
       localStorage.removeItem("role");
       localStorage.removeItem("token");
       localStorage.removeItem("email");
-       localStorage.removeItem("Id");
+       localStorage.removeItem("userId");
    
 
     // Redirect to the login page

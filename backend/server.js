@@ -35,12 +35,19 @@ dotenv.config();
 const app = express();
 
 // ====== Middlewares =====
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//   })
+// );
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173"
+  ],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use("/api/chat", chatRoutes);
@@ -59,6 +66,7 @@ app.use("/api/employees", formerEmployeeRoutes);
 app.use("/api/payroll", payrollRoutes);
 app.use("/api/admin/logs", adminLogRoutes);
 app.use("/api/employee/logs", employeeLogRoutes);
+
 
 // ====== Static files ======
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
