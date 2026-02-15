@@ -88,6 +88,14 @@ Access URLs:
     Frontend: http://localhost:5173 (dev) or configured preview port
     Backend API: http://localhost:5000
 
+
+
+use this for access
+
+1)**for admin**-p@gmail.com.com {pass-123}
+2)**for employee**-durgapalpriyanjal@gmail.com {pass-123456}
+3)**for hr**-milandurgapal2@gmail.com {pass-123456}
+3)**for project_coordinator**-priyanjaldurgapal5@gmail.com {pass-123456}
 Troubleshooting
 CORS Issues
 If you encounter CORS errors during local development:
@@ -110,3 +118,5 @@ Fork the repository.
 Create a new branch for your feature/bugfix.
 Commit your changes with clear messages.
 Open a Pull Request with a detailed description.
+
+
