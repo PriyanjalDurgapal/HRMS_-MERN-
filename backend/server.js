@@ -38,7 +38,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      process.env.FRONTEND_URL, 
+      process.env.FRONTEND_URL,
     ],
     credentials: true,
   })
@@ -70,11 +70,24 @@ app.use("/api/chat", chatRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ===============================
-   MongoDB Connection
+   Health Check
 ================================ */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
+app.get("/", (req, res) => {
+  res.send("HRMS Backend Running");
+});
+
+/* ===============================
+   Socket.IO
+================================ */
+const server = http.createServer(app);
+initSocket(server);
+
+/* ===============================
+   Start Server (WAIT for MongoDB)
+================================ */
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected");
 
     /* Auto Generate Attendance Daily */
@@ -102,26 +115,17 @@ mongoose
         console.error("Auto-absent error:", err.message);
       }
     });
-  })
-  .catch((err) => console.error("MongoDB connection error:", err));
 
-/* ===============================
-   Health Check
-================================ */
-app.get("/", (req, res) => {
-  res.send("HRMS Backend Running");
-});
+    const PORT = process.env.PORT || 5000;
 
-/* ===============================
-   Socket.IO
-================================ */
-const server = http.createServer(app);
-initSocket(server);
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
 
-/* ===============================
-   Start Server
-================================ */
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  }
+};
+
+startServer();
