@@ -90,6 +90,10 @@ Access URLs:
 
 
 
+**where i hosted**
+frontend-https://hrms-mern.vercel.app/
+backend-https://hrms-mern-1ce5.onrender.com/
+
 use this for access
 
 1)**for admin**-p@gmail.com.com {pass-123}
