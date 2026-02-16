@@ -1,6 +1,6 @@
 // src/components/ChatSidebar.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useSocket } from "../context/SocketContext";
 import { useUnread } from "../context/UnreadContext";
 
@@ -17,8 +17,8 @@ export default function ChatSidebar({ setSelectedUser }) {
   // Fetch users
   useEffect(() => {
     if (!currentUserId) return;
-    axios
-      .get(`http://localhost:5000/api/chat/employees/${currentUserId}`)
+   api
+  .get(`/chat/employees/${currentUserId}`)
       .then((res) => setUsers(res.data))
       .catch((err) => console.error("Error fetching users:", err));
   }, [currentUserId]);

@@ -1,21 +1,9 @@
-import axios from "axios";
-
-const employeeAPI = axios.create({
-  baseURL: "http://localhost:5000/api/employees",
-});
+import api from "../api/axios";
 
 // Add employee
 export const addEmployee = async (formData) => {
   try {
-    const token = localStorage.getItem("authToken");
-
-    const response = await employeeAPI.post("/", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-       
-      },
-    });
-
+    const response = await api.post("/employees", formData);
     return response.data;
   } catch (error) {
     throw error;
@@ -23,4 +11,4 @@ export const addEmployee = async (formData) => {
 };
 
 // Get all employees
-export const getEmployees = () => employeeAPI.get("/");
+export const getEmployees = () => api.get("/employees");

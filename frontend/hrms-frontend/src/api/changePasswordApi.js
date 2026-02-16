@@ -1,11 +1,7 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000/api/change-password",
-});
+import api from "./axios";
 
 export const sendChangePasswordOTP = (email) =>
-  API.post("/send-otp", { email });
+  api.post("/change-password/send-otp", { email });
 
 export const verifyOTPAndChangePassword = (data) =>
-  API.post("/verify-otp", data);
+  api.post("/change-password/verify-otp", data);

@@ -9,8 +9,13 @@ export const onlineUsers = {}; // { userId: socketId }
 export default function initSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: "*", 
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        process.env.FRONTEND_URL, //  production frontend
+      ],
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
@@ -18,16 +23,16 @@ export default function initSocket(server) {
     console.log("New client connected:", socket.id);
 
     socket.on("register", (userId) => {
-      if (userId) {
-        onlineUsers[userId] = socket.id;
-        console.log(`User ${userId} registered with socket ${socket.id}`);
+      if (!userId) return;
 
-        
-        io.emit("online_users", Object.keys(onlineUsers));
-      }
+      //  Prevent duplicate mapping
+      onlineUsers[userId] = socket.id;
+
+      console.log(`User ${userId} registered with socket ${socket.id}`);
+
+      io.emit("online_users", Object.keys(onlineUsers));
     });
 
-  
     socket.on("send_message", async (data) => {
       const { sender, receiver, content } = data;
 
@@ -46,21 +51,16 @@ export default function initSocket(server) {
         const senderSocketId = onlineUsers[sender];
         const receiverSocketId = onlineUsers[receiver];
 
-        // To receiver (if online)
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("receive_message", chat);
-
-          // Notify receiver for unread badge in sidebar
           io.to(receiverSocketId).emit("new_message_notification", {
             from: sender,
           });
         }
 
-        // To sender (always, for instant UI update)
         if (senderSocketId) {
           io.to(senderSocketId).emit("receive_message", chat);
         } else {
-          // Fallback: send to current socket if sender somehow not in map
           socket.emit("receive_message", chat);
         }
       } catch (err) {
@@ -69,7 +69,6 @@ export default function initSocket(server) {
       }
     });
 
-    // Typing indicator
     socket.on("typing", ({ sender, receiver }) => {
       const receiverSocketId = onlineUsers[receiver];
       if (receiverSocketId) {
@@ -77,7 +76,6 @@ export default function initSocket(server) {
       }
     });
 
-    // Optional: stop typing (good practice)
     socket.on("stop_typing", ({ sender, receiver }) => {
       const receiverSocketId = onlineUsers[receiver];
       if (receiverSocketId) {
@@ -85,12 +83,11 @@ export default function initSocket(server) {
       }
     });
 
-    // Handle disconnection
     socket.on("disconnect", (reason) => {
       console.log(`Client disconnected: ${socket.id} (${reason})`);
 
-      // Remove user from onlineUsers
       let disconnectedUserId = null;
+
       for (const userId in onlineUsers) {
         if (onlineUsers[userId] === socket.id) {
           disconnectedUserId = userId;
@@ -101,7 +98,6 @@ export default function initSocket(server) {
 
       if (disconnectedUserId) {
         console.log(`User ${disconnectedUserId} is now offline`);
-        
         io.emit("online_users", Object.keys(onlineUsers));
       }
     });
@@ -109,7 +105,6 @@ export default function initSocket(server) {
 
   return io;
 }
-
 
 export const getIO = () => {
   if (!io) {

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";
+import { getFileUrl } from "../util/file";
 
 const EmployeeModal = ({ open, onClose, employee, onUpdate }) => {
   if (!open || !employee) return null;
 
-  const fileUrl = (file) =>
-    file ? `http://localhost:5000${file.startsWith("/") ? "" : "/"}${file.replace(/\\/g, "/")}` : null;
+ 
+  const fileUrl = (file) => (file ? getFileUrl(file) : null);
 
   const [formData, setFormData] = useState({ ...employee });
   const [saving, setSaving] = useState(false);
@@ -22,10 +23,9 @@ const EmployeeModal = ({ open, onClose, employee, onUpdate }) => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem("authToken");
-      await axios.put(`http://localhost:5000/api/employees/${employee._id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      await api.put(`/employees/${employee._id}`, formData);
+
       alert("Employee updated successfully!");
       onUpdate?.();
       onClose();
@@ -45,10 +45,17 @@ const EmployeeModal = ({ open, onClose, employee, onUpdate }) => {
         <div className="sticky top-0 bg-white border-b z-10">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 px-4 sm:px-10 py-4 sm:py-6">
             <img
-              src={fileUrl(formData.profilePic) || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name || "User")}`}
+              src={
+                fileUrl(formData.profilePic) ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  formData.name || "User"
+                )}`
+              }
               alt="Profile"
               className="w-20 h-20 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-gray-100 shadow-lg"
-              onError={(e) => (e.target.src = "https://ui-avatars.com/api/?name=User")}
+              onError={(e) =>
+                (e.target.src = "https://ui-avatars.com/api/?name=User")
+              }
             />
             <div className="flex-1 w-full text-center sm:text-left">
               <input
@@ -66,7 +73,10 @@ const EmployeeModal = ({ open, onClose, employee, onUpdate }) => {
                 placeholder="Designation"
               />
               <p className="text-sm text-gray-500 mt-1 font-medium">
-                Employee ID: <span className="text-gray-800">{formData.employeeId || "N/A"}</span>
+                Employee ID:{" "}
+                <span className="text-gray-800">
+                  {formData.employeeId || "N/A"}
+                </span>
               </p>
             </div>
           </div>
@@ -130,17 +140,7 @@ const EmployeeModal = ({ open, onClose, employee, onUpdate }) => {
               saving ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {saving ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
-                </svg>
-                Saving...
-              </span>
-            ) : (
-              "Save Changes"
-            )}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
@@ -174,14 +174,11 @@ const Doc = ({ label, file }) => (
     <span className="font-medium text-gray-700">{label}:</span>
     {file ? (
       <a
-        href={file.startsWith("http") ? file : `http://localhost:5000/${file}`}
+        href={getFileUrl(file)}  
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:text-blue-800 underline flex items-center gap-1 truncate max-w-[120px] sm:max-w-full"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m4-8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-4" />
-        </svg>
         View
       </a>
     ) : (

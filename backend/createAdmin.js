@@ -3,13 +3,13 @@
 // const User = require("./models/User"); 
 // require("dotenv").config();
 
-// // 1️⃣ Connect to DB
+// // 
 // mongoose
 //   .connect(process.env.MONGO_URI)
 //   .then(() => console.log("MongoDB Connected"))
 //   .catch((err) => console.log(err));
 
-// // 2️⃣ Create Admin User
+// // 
 // async function createAdmin() {
 //   try {
 //     const email = "p@gmail.com.com";

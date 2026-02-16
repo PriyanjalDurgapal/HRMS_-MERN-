@@ -1,4 +1,5 @@
 import React from "react";
+import { getFileUrl } from "../util/file";
 
 const EmployeeCard = ({ employee, onOpen, onDelete }) => {
 
@@ -8,8 +9,8 @@ const EmployeeCard = ({ employee, onOpen, onDelete }) => {
 
   // Safe profile pic URL handling
   const profileSrc = employee.profilePic
-    ? `http://localhost:5000${employee.profilePic.startsWith("/") ? "" : "/"}${employee.profilePic.replace(/\\/g, "/")}`
-    : defaultProfilePic;
+  ? getFileUrl(employee.profilePic)
+  : defaultProfilePic;
 
   return (
     <div

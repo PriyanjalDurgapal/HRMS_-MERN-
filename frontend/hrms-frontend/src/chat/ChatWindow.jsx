@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import { useUnread } from "../context/UnreadContext";
-import axios from "axios";
+import api from "../api/axios";
 import { BsCheck2, BsCheck2All } from "react-icons/bs";
 
 export default function ChatWindow({ selectedUser }) {
@@ -35,8 +35,7 @@ export default function ChatWindow({ selectedUser }) {
       setMessages([]);
       return;
     }
-    axios
-      .get(`http://localhost:5000/api/chat/history/${userId}/${selectedUser._id}`)
+   api.get(`/chat/history/${userId}/${selectedUser._id}`)
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Load history error:", err));
   }, [selectedUser, userId]);
@@ -44,7 +43,7 @@ export default function ChatWindow({ selectedUser }) {
   // Mark messages as seen when chat opens
   useEffect(() => {
     if (!selectedUser || !userId) return;
-    axios.post("http://localhost:5000/api/chat/seen", {
+    api.post("/chat/seen", {
       sender: selectedUser._id,
       receiver: userId,
     });
@@ -63,7 +62,7 @@ export default function ChatWindow({ selectedUser }) {
 
         // Auto-mark incoming messages as seen
         if (msg.sender === selectedUser._id) {
-          axios.post("http://localhost:5000/api/chat/seen", {
+          api.post("/chat/seen", {
             sender: selectedUser._id,
             receiver: userId,
           });
@@ -117,7 +116,7 @@ export default function ChatWindow({ selectedUser }) {
   const handleEdit = (message) => {
     const newContent = prompt("Edit your message:", message.content);
     if (!newContent || newContent.trim() === message.content) return;
-    axios.put("http://localhost:5000/api/chat/message/edit", {
+    api.put("/chat/message/edit",  {
       messageId: message._id,
       content: newContent.trim(),
     });
@@ -125,7 +124,7 @@ export default function ChatWindow({ selectedUser }) {
 
   const handleDelete = (messageId) => {
     if (!confirm("Delete this message?")) return;
-    axios.put("http://localhost:5000/api/chat/message/delete", { messageId });
+   api.put("/chat/message/delete", { messageId });
   };
 
   // Send message

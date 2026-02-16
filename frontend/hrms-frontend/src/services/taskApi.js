@@ -1,38 +1,40 @@
-import axios from "axios";
-import { getToken } from "../util/auth";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-});
-
-// Auto-attach token to every request
-API.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import api from "../api/axios";
 
 // Admin APIs
-export const getAvailableEmployees = () => API.get("/tasks/available-employees");
-export const getEmployeeAttendanceStatus = () => API.get("/tasks/employee-attendance-status");
-export const assignTask = (data) => API.post("/tasks/assign", data);
-export const getAllAssignedTasks = () => API.get("/tasks/all"); // ← Admin sees all tasks
+export const getAvailableEmployees = () =>
+  api.get("/tasks/available-employees");
+
+export const getEmployeeAttendanceStatus = () =>
+  api.get("/tasks/employee-attendance-status");
+
+export const assignTask = (data) =>
+  api.post("/tasks/assign", data);
+
+export const getAllAssignedTasks = () =>
+  api.get("/tasks/all");
 
 // Task actions (Admin)
-export const terminateTask = (id) => API.patch(`/tasks/${id}/terminate`);
-export const updateTaskDescription = (id, description) =>
-  API.patch(`/tasks/${id}`, { description });
-export const extendTask = (id, additionalHours) =>
-  API.patch(`/tasks/${id}/extend`, { additionalHours });
-export const togglePauseTask = (id) => API.patch(`/tasks/${id}/pause`);
+export const terminateTask = (id) =>
+  api.patch(`/tasks/${id}/terminate`);
 
-// Employee APIs (if needed elsewhere)
-export const getMyTasks = () => API.get("/tasks/my");
+export const updateTaskDescription = (id, description) =>
+  api.patch(`/tasks/${id}`, { description });
+
+export const extendTask = (id, additionalHours) =>
+  api.patch(`/tasks/${id}/extend`, { additionalHours });
+
+export const togglePauseTask = (id) =>
+  api.patch(`/tasks/${id}/pause`);
+
+// Employee APIs
+export const getMyTasks = () =>
+  api.get("/tasks/my");
+
 export const uploadTaskReport = (taskId, file) => {
   const formData = new FormData();
   formData.append("report", file);
-  return API.post(`/tasks/${taskId}/report`, formData);
+  return api.post(`/tasks/${taskId}/report`, formData);
 };
-export const requestStopTask = (id) => API.patch(`/tasks/${id}/request-stop`);
+
+export const requestStopTask = (id) =>
+  api.patch(`/tasks/${id}/request-stop`);

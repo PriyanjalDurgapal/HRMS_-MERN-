@@ -1,23 +1,38 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const SocketContext = createContext();
+const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000"); 
+    const SOCKET_URL =
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+
+    const newSocket = io(SOCKET_URL, {
+      transports: ["websocket"], 
+      autoConnect: true,
+    });
+
+    newSocket.on("connect", () => {
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        newSocket.emit("register", userId);
+      }
+    });
+
     setSocket(newSocket);
 
-    const userId = localStorage.getItem("userId");
-    if (userId) newSocket.emit("register", userId);
-
-    return () => newSocket.disconnect();
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={socket}>
+      {children}
+    </SocketContext.Provider>
   );
 };
 

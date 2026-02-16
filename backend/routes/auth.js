@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import logActivity from "../utils/logActivity.js";
 
-// 🔽 IMPORT FORGOT PASSWORD CONTROLLERS
+//  IMPORT FORGOT PASSWORD CONTROLLERS
 import {
   sendChangePasswordOTP,
   verifyOTPAndChangePassword,
